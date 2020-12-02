@@ -6,10 +6,15 @@ pub fn first_step(entries: Passwords<PasswordDay1>) {
     print_result(entries.valid_ones().len() as i32);
 }
 
+pub fn second_step(entries: Passwords<PasswordDay2>) {
+    print_result(entries.valid_ones().len() as i32);
+}
+
 pub trait ValidatedPassword {
     fn is_valid(&self) -> bool;
 }
 
+#[derive(Debug)]
 pub struct Passwords<T>(Vec<T>);
 
 impl<T: ValidatedPassword> Passwords<T> {
@@ -73,28 +78,49 @@ impl FromStr for PasswordDay1 {
 }
 
 #[derive(PartialEq, Debug)]
-pub struct NewPasswordPolicy {
+pub struct PasswordDay2 {
+    password: String,
     positions: (i32, i32),
     char: char,
 }
 
-impl FromStr for NewPasswordPolicy {
+impl ValidatedPassword for PasswordDay2 {
+    fn is_valid(&self) -> bool {
+        let (pos1, pos2) = self.positions;
+        let password_chars: Vec<char> = self.password.chars().collect();
+        let chars = vec![
+            password_chars[(pos1 - 1) as usize],
+            password_chars[(pos2 - 1) as usize],
+        ];
+        chars
+            .iter()
+            .fold(false, |acc, c| if c == &self.char { !acc } else { acc })
+    }
+}
+
+impl FromStr for PasswordDay2 {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s.split(' ').collect::<Vec<&str>>().as_slice() {
-            [positions, char] => {
-                let positions_values = positions
-                    .split('-')
-                    .map(|v| v.parse::<i32>().unwrap())
-                    .collect::<Vec<i32>>();
+        match s.split(':').collect::<Vec<&str>>().as_slice() {
+            [policy_pattern, password] => {
+                match policy_pattern.split(' ').collect::<Vec<&str>>().as_slice() {
+                    [range, char] => {
+                        let range_values = range
+                            .split('-')
+                            .map(|v| v.parse::<i32>().unwrap())
+                            .collect::<Vec<i32>>();
 
-                Ok(Self {
-                    positions: (positions_values[0], positions_values[1]),
-                    char: char.chars().next().unwrap(),
-                })
+                        Ok(Self {
+                            password: password.trim().to_string(),
+                            positions: (range_values[0], range_values[1]),
+                            char: char.chars().next().unwrap(),
+                        })
+                    }
+                    _ => Err(format!("no policy could be extracted from {}", s)),
+                }
             }
-            _ => Err(format!("no policy could be extracted from {}", s)),
+            _ => Err(format!("the line {} is not valid", s)),
         }
     }
 }
@@ -151,7 +177,7 @@ mod tests {
 1-3 b: cdefg
 2-9 c: ccccccccc";
 
-        let entries: Passwords<PasswordDay1> = input.parse().unwrap();
+        let entries: Passwords<PasswordDay2> = input.parse().unwrap();
         assert_eq!(1, entries.valid_ones().len());
     }
 }
