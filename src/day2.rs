@@ -1,13 +1,12 @@
-use crate::utils::*;
 use std::ops::RangeInclusive;
 use std::str::FromStr;
 
-pub fn first_step(entries: Passwords<PasswordDay1>) {
-    print_result(entries.valid_ones().len() as i32);
+pub fn first_step(entries: Passwords<PasswordDay1>) -> i32 {
+    entries.valid_ones().len() as i32
 }
 
-pub fn second_step(entries: Passwords<PasswordDay2>) {
-    print_result(entries.valid_ones().len() as i32);
+pub fn second_step(entries: Passwords<PasswordDay2>) -> i32 {
+    entries.valid_ones().len() as i32
 }
 
 pub trait ValidatedPassword {

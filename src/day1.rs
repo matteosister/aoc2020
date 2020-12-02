@@ -4,22 +4,22 @@ use std::str::FromStr;
 #[derive(Debug)]
 pub struct Numbers(Vec<i32>);
 
-pub fn one(data: Numbers) {
+pub fn one(data: Numbers) -> i32 {
     let permutations = compute_permutations(data.0);
     let correct_permutation = permutations
         .iter()
         .find(|(first, second)| first + second == 2020)
         .unwrap();
-    print_result(correct_permutation.0 * correct_permutation.1);
+    correct_permutation.0 * correct_permutation.1
 }
 
-pub fn two(data: Numbers) {
+pub fn two(data: Numbers) -> i32 {
     let permutations = compute_permutations_for_3(data.0);
     let correct_permutation = permutations
         .iter()
         .find(|(first, second, third)| first + second + third == 2020)
         .unwrap();
-    print_result(correct_permutation.0 * correct_permutation.1 * correct_permutation.2);
+    correct_permutation.0 * correct_permutation.1 * correct_permutation.2
 }
 
 fn compute_permutations<T: Copy>(list: Vec<T>) -> Vec<(T, T)> {

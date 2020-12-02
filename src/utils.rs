@@ -4,6 +4,7 @@ use async_std::fs::File;
 use async_std::prelude::*;
 
 use crate::AocResult;
+use tokio::time::Duration;
 
 pub async fn read_file<T: FromStr>(file: &str) -> AocResult<T>
 where
@@ -16,8 +17,16 @@ where
     Ok(data.parse().expect("impossible to parse data"))
 }
 
-pub fn print_result(res: impl ToString) {
+pub fn print_result(res: impl ToString, duration: Duration) {
     println!("----------------------------------------");
-    println!("Risultato: {}", res.to_string());
+    println!("Risultato: {} in {:#?}", res.to_string(), duration);
     println!("----------------------------------------");
+}
+
+pub fn measure<R>(func: impl FnOnce() -> R) -> (Duration, R) {
+    use std::time::{Duration, Instant};
+    let start = Instant::now();
+    let result = func();
+    let duration = start.elapsed();
+    (duration, result)
 }
