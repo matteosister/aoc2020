@@ -4,13 +4,13 @@ use async_std::fs::File;
 use async_std::prelude::*;
 
 use crate::AocResult;
-use tokio::time::Duration;
+use std::time::{Duration, Instant};
 
 pub async fn read_file<T: FromStr>(file: &str) -> AocResult<T>
 where
     <T as std::str::FromStr>::Err: std::fmt::Debug,
 {
-    let mut file = File::open(format!("input/{}", file)).await?;
+    let mut file = File::open(format!("input/2020/{}.txt", file)).await?;
     let mut contents = Vec::new();
     file.read_to_end(&mut contents).await?;
     let data = std::str::from_utf8(&contents)?;
@@ -24,7 +24,6 @@ pub fn print_result(res: impl ToString, duration: Duration) {
 }
 
 pub fn measure<R>(func: impl FnOnce() -> R) -> (Duration, R) {
-    use std::time::{Duration, Instant};
     let start = Instant::now();
     let result = func();
     let duration = start.elapsed();
