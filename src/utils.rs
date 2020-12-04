@@ -17,6 +17,16 @@ where
     Ok(data.parse().expect("impossible to parse data"))
 }
 
+pub async fn read_file_contents(file: &str) -> String {
+    let mut file = File::open(format!("input/2020/{}.txt", file))
+        .await
+        .unwrap();
+    let mut contents = Vec::new();
+    file.read_to_end(&mut contents).await.unwrap();
+    let data = std::str::from_utf8(&contents).unwrap();
+    data.to_string()
+}
+
 pub fn print_result(res: impl ToString, duration: Duration) {
     println!("----------------------------------------");
     println!("Risultato: {} in {:#?}", res.to_string(), duration);
